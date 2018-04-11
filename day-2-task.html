@@ -18,6 +18,20 @@
           <li key={name}>
             <span>{name}</span>
             <button onClick={() => props.onRemoveFriend(name)}>Remove</button>
+            <button onClick={() => props.onDeActivateFriend(name)}>DeActivate</button>
+          </li>
+        ))}
+      </ul> 
+    )
+  }
+
+  function InActiveFriendsList (props) {
+    return (
+      <ul>
+        {props.list.map((name) => (
+          <li key={name}>
+            <span>{name}</span>
+            <button onClick={() => props.onReActivateFriend(name)}>Activate</button>
           </li>
         ))}
       </ul> 
@@ -29,12 +43,15 @@
       super(props)
       this.state = {
         friends: ['chris','john','iris'],
+        inActivefriends: ['tara'],
         input: '',
       }
       this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
       this.handleAddFriend = this.handleAddFriend.bind(this)
       this.handleClearAll = this.handleClearAll.bind(this)
       this.updateInput = this.updateInput.bind(this)
+      this.handleDeActivateFriend = this.handleDeActivateFriend.bind(this)
+      this.handleReActivateFriend = this.handleReActivateFriend.bind(this)
     }
 
     handleClearAll() {
@@ -62,6 +79,24 @@
       })
     }
 
+    handleDeActivateFriend(name) {
+      this.setState((currentState) => {
+        return {
+          friends: currentState.friends.filter((friend) => friend !== name),
+          inActivefriends: currentState.inActivefriends.concat([name]),
+        }
+      })
+    }
+
+    handleReActivateFriend(name) {
+      this.setState((currentState) => {
+        return {
+          inActivefriends: currentState.inActivefriends.filter((friend) => friend !== name),
+          friends: currentState.friends.concat([name]),
+        }
+      })
+    }
+
     updateInput(e) {
       const value = e.target.value
       this.setState(() => ({
@@ -84,9 +119,16 @@
           <button
             onClick={this.handleClearAll}
           >Clear All</button>
+          <h2>Active Friends</h2>
           <FriendsList 
             list={this.state.friends}
             onRemoveFriend={this.handleRemoveFriend}
+            onDeActivateFriend={this.handleDeActivateFriend}
+          />
+          <h2>InActive Friends</h2>
+          <InActiveFriendsList 
+            list={this.state.inActivefriends}
+            onReActivateFriend={this.handleReActivateFriend}
           />
         </div>
       )
