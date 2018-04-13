@@ -79,12 +79,25 @@
         this.state = {
           languagelist: ['all','javascript','ruby','python'],
           language: 'all',
+          data: '',
           loading: true,
         }
         this.handleSelectLanguage = this.handleSelectLanguage.bind(this)
         console.log('--constructor--')
       }
 
+      componentDidMount() {
+        API.fetchPopularRepos(this.state.language)
+          .then((data) => {
+            this.setState({
+              data,
+              loading: false,
+            })
+            console.log('DATA', data)
+          })
+        console.log('--componentDidMount--')
+      }
+      
       handleSelectLanguage(setLanguage) {
         this.setState(() => {
           return {
