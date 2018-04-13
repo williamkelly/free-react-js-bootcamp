@@ -25,6 +25,12 @@
   </script>
 
   <script type='text/babel'>
+    function Title (props) {
+      return (
+        <h1>{props.label}</h1> 
+      )
+    }
+    
     function Menulist (props) {
       return (
         <ul>
@@ -39,7 +45,7 @@
         </ul> 
       )
     }
-        
+
     class Loading extends React.Component {
       constructor(props) {
         super(props);
@@ -79,10 +85,10 @@
         console.log('--constructor--')
       }
 
-      handleSelectLanguage(language) {
+      handleSelectLanguage(setLanguage) {
         this.setState(() => {
           return {
-            language: language,
+            language: setLanguage,
           }
         })
       }
@@ -93,6 +99,7 @@
               list={this.state.languagelist}
               selectLanguage={this.handleSelectLanguage}
             />
+            <Title label={this.state.language} />
           </div>
         )
       }
