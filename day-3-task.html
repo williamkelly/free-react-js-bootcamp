@@ -25,6 +25,17 @@
   </script>
 
   <script type='text/babel'>
+
+    function Data (props) {
+      return (
+        <li>
+          {props.info.name}<br />
+          @{props.name}<br />
+          {props.stargazers_count} stars
+        </li> 
+      )
+    }
+    
     function Title (props) {
       return (
         <h1>{props.label}</h1> 
@@ -113,6 +124,7 @@
               selectLanguage={this.handleSelectLanguage}
             />
             <Title label={this.state.language} />
+            <Data info={this.state.data} />
           </div>
         )
       }
