@@ -8,6 +8,7 @@
 </head>
 <body>
   <div id='app'></div>
+
   <script>
     window.API = {
       fetchPopularRepos(language) {
@@ -28,15 +29,16 @@
 
     function Data (props) {
       return (
-        <ul>
-          {props.info.map((items) => (
+        <ul style={{display: 'flex', flexWrap: 'wrap'}}>
+          {props.info.map(({name, owner, stargazers_count, html_url}) => (
             <li
-              key={items.id}
+              key={name}
+              style={{margin:30}}
             >
               <ul>
-                <li>{items.name}</li>
-                <li>@{items.name}</li>
-                <li>{items.stargazers_count} stars</li>
+                <li><a href={html_url}>{name}</a></li>
+                <li>{owner.login}</li>
+                <li>{stargazers_count} stars</li>
               </ul>
             </li>
           ))}
@@ -52,18 +54,21 @@
       )
     }
     
-    function Menulist (props) {
+    function Nav (props) {
+      const languages = ['all','javascript','ruby','python']
       return (
-        <ul>
-          {props.list.map((language) => (
-            <li 
-              key={language}
-              onClick={() => props.selectLanguage(language)}
-            >
-              {language}
-            </li>
-          ))}
-        </ul> 
+        <nav>
+          <ul>
+            {languages.map((lang) => (
+              <li 
+                key={lang}
+                onClick={() => props.onSelectLanguage(lang)}
+              >
+                {lang}
+              </li>
+            ))}
+          </ul>
+        </nav>
       )
     }
 
@@ -98,44 +103,47 @@
       constructor(props) {
         super(props)
         this.state = {
-          languagelist: ['all','javascript','ruby','python'],
-          language: 'all',
-          data: '',
+          activeLanguage: 'all',
+          repos: [],
           loading: true,
         }
         this.handleSelectLanguage = this.handleSelectLanguage.bind(this)
+        this.fetchRepos = this.fetchRepos.bind(this)
+        
         //console.log('--constructor--')
       }
 
       componentDidMount() {
-        API.fetchPopularRepos(this.state.language)
-          .then((data) => {
-            this.setState({
-              data,
-              loading: false,
-            })
-          })
+        this.fetchRepos(this.state.activeLanguage)
         //console.log('--componentDidMount--')
       }
 
       componentDidUpdate(previousProps, previousState) {
-console.log(previousProps)
-console.log(previousState)
-if(previousProps.data !== this.props.data) {
-console.log("update")
 
-} else {
-  console.log("dont update")
-  
-}
+        if(previousState.activeLanguage !== this.state.activeLanguage) {
+          this.fetchRepos(this.state.activeLanguage)
+        }
 
       }
 
+      fetchRepos(lang) {
+        this.setState({
+          loading: true,
+        })
+        API.fetchPopularRepos(lang)
+          .then((repos) => {
+            this.setState({
+              repos,
+              loading: false,
+            })
+          })
+
+      }
       
-      handleSelectLanguage(setLanguage) {
+      handleSelectLanguage(lang) {
         this.setState(() => {
           return {
-            language: setLanguage,
+            activeLanguage: lang,
           }
         })
       }
@@ -149,12 +157,11 @@ console.log("update")
 
         return (
           <div>
-            <Menulist 
-              list={this.state.languagelist}
-              selectLanguage={this.handleSelectLanguage}
+            <Nav 
+              onSelectLanguage={this.handleSelectLanguage}
             />
-            <Title label={this.state.language} />
-            <Data info={this.state.data} />
+            <Title label={this.state.activeLanguage} />            
+            <Data info={this.state.repos} />
           </div>
         )
       }
